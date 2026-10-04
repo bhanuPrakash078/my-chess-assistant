@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useReplay } from '../hooks/useReplay'
 import Board from './Board'
 import Controls from './Controls'
@@ -7,7 +7,8 @@ import MoveList from './MoveList'
 export default function Replay({ game }) {
   const { plies, result } = game
   const lastPly = plies.length - 1
-  const replay = useReplay(lastPly)
+  const moveSquares = useMemo(() => plies.map((p) => p.move?.squares ?? 0), [plies])
+  const replay = useReplay(moveSquares)
   const [flipped, setFlipped] = useState(false)
   const current = plies[replay.ply]
 
@@ -44,7 +45,7 @@ export default function Replay({ game }) {
           lastMove={current.move}
           checkSquare={current.checkSquare}
           flipped={flipped}
-          animMs={Math.min(300, replay.speed * 0.6)}
+          msPerSquare={replay.msPerSquare}
         />
         <div className="status">
           <strong>{status}</strong>

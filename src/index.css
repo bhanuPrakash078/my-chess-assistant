@@ -97,7 +97,7 @@ button.primary { background: var(--accent); color: #1e1d1b; border-color: var(--
 }
 .piece {
   z-index: 2;
-  transition: transform var(--anim, 250ms) ease-in-out;
+  transition: transform 250ms ease-in-out; /* duration is set per move from distance */
   animation: appear 150ms ease-out;
 }
 @keyframes appear { from { opacity: 0; } }

@@ -1,24 +1,28 @@
 import { useEffect, useState } from 'react'
 
-export function useReplay(lastPly) {
+// moveSquares[ply] = how many squares the move that produced `ply` slides (0 for the start).
+export function useReplay(moveSquares) {
+  const lastPly = moveSquares.length - 1
   const [ply, setPly] = useState(0)
   const [playingRequested, setPlaying] = useState(false)
-  const [speed, setSpeed] = useState(900) // ms per move
+  const [msPerSquare, setMsPerSquare] = useState(150)
   const playing = playingRequested && ply < lastPly
 
   useEffect(() => {
     if (!playing) return
-    const t = setTimeout(() => setPly((p) => Math.min(p + 1, lastPly)), speed)
+    // let the current slide finish, then pause briefly before the next move
+    const delay = moveSquares[ply] * msPerSquare + msPerSquare * 4
+    const t = setTimeout(() => setPly((p) => Math.min(p + 1, lastPly)), delay)
     return () => clearTimeout(t)
-  }, [playing, ply, lastPly, speed])
+  }, [playing, ply, lastPly, msPerSquare, moveSquares])
 
   const goTo = (p) => setPly(Math.max(0, Math.min(lastPly, p)))
 
   return {
     ply,
     playing,
-    speed,
-    setSpeed,
+    msPerSquare,
+    setMsPerSquare,
     goTo,
     next: () => goTo(ply + 1),
     prev: () => goTo(ply - 1),

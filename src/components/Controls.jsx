@@ -16,11 +16,11 @@ export default function Controls({ replay, lastPly, flipped, onFlip }) {
         <span>Speed</span>
         <input
           type="range"
-          min={200}
-          max={2000}
-          step={100}
-          value={2200 - replay.speed}
-          onChange={(e) => replay.setSpeed(2200 - Number(e.target.value))}
+          min={60}
+          max={300}
+          step={10}
+          value={360 - replay.msPerSquare}
+          onChange={(e) => replay.setMsPerSquare(360 - Number(e.target.value))}
         />
       </label>
     </div>

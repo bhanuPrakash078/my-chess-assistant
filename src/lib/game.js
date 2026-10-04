@@ -50,6 +50,11 @@ function applyMove(board, move) {
   return next
 }
 
+// Squares travelled, counted like a king walks: e2-e4 = 2, a1-h8 = 7, a knight jump = 2.
+export function squareDistance(a, b) {
+  return Math.max(Math.abs(a.charCodeAt(0) - b.charCodeAt(0)), Math.abs(Number(a[1]) - Number(b[1])))
+}
+
 // Sorted by id so every piece keeps the same position in the DOM from move to move.
 // If React had to reorder an <img>, the browser would drop its CSS transition and
 // the piece would snap instead of slide.
@@ -96,7 +101,14 @@ export function parseGame(text) {
     board = applyMove(board, move)
     plies.push({
       pieces: snapshot(board),
-      move: { san: move.san, from: move.from, to: move.to, color: move.color },
+      move: {
+        san: move.san,
+        from: move.from,
+        to: move.to,
+        color: move.color,
+        // longest slide in this move; in queenside castling the rook travels 3
+        squares: Math.max(squareDistance(move.from, move.to), move.flags.includes('q') ? 3 : 0),
+      },
       checkSquare: chess.inCheck() ? kingSquare(board, chess.turn()) : null,
     })
   }
