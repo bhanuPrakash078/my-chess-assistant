@@ -50,8 +50,13 @@ function applyMove(board, move) {
   return next
 }
 
+// Sorted by id so every piece keeps the same position in the DOM from move to move.
+// If React had to reorder an <img>, the browser would drop its CSS transition and
+// the piece would snap instead of slide.
 function snapshot(board) {
-  return Object.entries(board).map(([square, p]) => ({ ...p, square }))
+  return Object.entries(board)
+    .map(([square, p]) => ({ ...p, square }))
+    .sort((a, b) => (a.id < b.id ? -1 : 1))
 }
 
 function kingSquare(board, color) {
