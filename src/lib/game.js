@@ -55,6 +55,13 @@ export function squareDistance(a, b) {
   return Math.max(Math.abs(a.charCodeAt(0) - b.charCodeAt(0)), Math.abs(Number(a[1]) - Number(b[1])))
 }
 
+// Slide time for a move. Grows with the square root of the distance, so long moves
+// still take longer than short ones but don't crawl: at 150ms, 1 square = 150ms,
+// 4 squares = 300ms, 7 squares = ~400ms.
+export function slideMs(squares, msPerSquare) {
+  return squares > 0 ? Math.round(msPerSquare * Math.sqrt(squares)) : 0
+}
+
 // Sorted by id so every piece keeps the same position in the DOM from move to move.
 // If React had to reorder an <img>, the browser would drop its CSS transition and
 // the piece would snap instead of slide.

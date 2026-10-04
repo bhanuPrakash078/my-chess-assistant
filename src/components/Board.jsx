@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { squareDistance } from '../lib/game'
+import { slideMs, squareDistance } from '../lib/game'
 
 const FILES = 'abcdefgh'
 
@@ -32,7 +32,7 @@ export default function Board({ pieces, lastMove, checkSquare, flipped, msPerSqu
   const slideStyle = (p) => {
     const from = shown.fromSquares[p.id]
     const style = placeAt(p.square, flipped)
-    if (from && from !== p.square) style.transitionDuration = `${squareDistance(from, p.square) * msPerSquare}ms`
+    if (from && from !== p.square) style.transitionDuration = `${slideMs(squareDistance(from, p.square), msPerSquare)}ms`
     return style
   }
 
@@ -42,10 +42,12 @@ export default function Board({ pieces, lastMove, checkSquare, flipped, msPerSqu
     const attacker = pieces.find((p) => p.square === victim.square && shown.fromSquares[p.id] !== p.square)
     const from = attacker && shown.fromSquares[attacker.id]
     const squares = from ? squareDistance(from, victim.square) : 1 // en passant: pawn moves one square
+    // The slide is linear, so the attacker enters the last square after (squares-1)/squares of it.
+    const perSquare = slideMs(squares, msPerSquare) / squares
     return {
       ...placeAt(victim.square, flipped),
-      animationDelay: `${(squares - 1) * msPerSquare}ms`,
-      animationDuration: `${msPerSquare}ms`,
+      animationDelay: `${Math.round((squares - 1) * perSquare)}ms`,
+      animationDuration: `${Math.round(perSquare)}ms`,
     }
   }
 

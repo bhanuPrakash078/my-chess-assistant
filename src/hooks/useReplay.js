@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { slideMs } from '../lib/game'
 
 // moveSquares[ply] = how many squares the move that produced `ply` slides (0 for the start).
 export function useReplay(moveSquares) {
@@ -11,7 +12,7 @@ export function useReplay(moveSquares) {
   useEffect(() => {
     if (!playing) return
     // let the current slide finish, then pause briefly before the next move
-    const delay = moveSquares[ply] * msPerSquare + msPerSquare * 4
+    const delay = slideMs(moveSquares[ply], msPerSquare) + msPerSquare * 4
     const t = setTimeout(() => setPly((p) => Math.min(p + 1, lastPly)), delay)
     return () => clearTimeout(t)
   }, [playing, ply, lastPly, msPerSquare, moveSquares])
