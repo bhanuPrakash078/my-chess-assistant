@@ -38,7 +38,7 @@ export default function Replay({ game }) {
     : 'Starting position'
 
   return (
-    <div className="replay">
+    <div className="game-layout">
       <div className="board-col">
         <Board
           pieces={current.pieces}

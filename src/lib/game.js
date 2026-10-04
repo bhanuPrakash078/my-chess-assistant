@@ -83,6 +83,20 @@ function describeEnd(chess) {
   return null
 }
 
+function attempt(chess, token) {
+  try {
+    return chess.move(token)
+  } catch {
+    return null
+  }
+}
+
+// Accepts SAN ("Nf3"), coordinates ("g1f3", "e7e8q") and, when typed by hand, a
+// lowercase piece letter ("nf3"). Pawn moves like "b4"/"bxc3" are tried as-is first.
+function tryMove(chess, token) {
+  return attempt(chess, token) ?? (/^[nbrqk]/.test(token) ? attempt(chess, token[0].toUpperCase() + token.slice(1)) : null)
+}
+
 /**
  * Replays a game from the starting position.
  * Returns plies[0..n]: plies[0] is the start, plies[i] is the position after move i.
@@ -95,12 +109,7 @@ export function parseGame(text) {
   let error = null
 
   for (const [i, token] of tokenize(text).entries()) {
-    let move
-    try {
-      move = chess.move(token)
-    } catch {
-      move = null
-    }
+    const move = tryMove(chess, token)
     if (!move) {
       error = `Move ${Math.floor(i / 2) + 1}${i % 2 ? '...' : '.'} ${token} is illegal or unreadable`
       break

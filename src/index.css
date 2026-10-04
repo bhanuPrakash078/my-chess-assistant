@@ -67,12 +67,12 @@ button.primary { background: var(--accent); color: #1e1d1b; border-color: var(--
 }
 
 /* Layout */
-.replay { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+.game-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
 .board-col { min-width: 0; }
 .side-col { display: flex; flex-direction: column; gap: 12px; }
 
 @media (max-width: 820px) {
-  .replay { grid-template-columns: minmax(0, 1fr); }
+  .game-layout { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* Board */
@@ -160,3 +160,34 @@ button.primary { background: var(--accent); color: #1e1d1b; border-color: var(--
 .san:hover { background: var(--panel-2); }
 .san.current { background: var(--accent); color: #1e1d1b; font-weight: 600; }
 .empty { color: var(--muted); margin: 8px; }
+
+/* Mode tabs */
+.tabs { display: inline-flex; gap: 4px; padding: 4px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 16px; }
+.tabs button { border: none; background: none; padding: 6px 14px; color: var(--muted); }
+.tabs button[aria-selected='true'] { background: var(--panel-2); color: var(--text); }
+
+/* Move-by-move mode */
+.san:disabled { opacity: 1; cursor: default; }
+.live-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.turn { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.turn-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--border); }
+.turn-dot.w { background: #f4f1ea; }
+.turn-dot.b { background: #111; }
+.turn .result { color: var(--accent); }
+.move-form { display: flex; gap: 8px; }
+.move-form input {
+  flex: 1;
+  min-width: 0;
+  font: 15px ui-monospace, 'SF Mono', Menlo, monospace;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.move-form input:focus { outline: none; border-color: var(--accent); }
+.move-form input[aria-invalid='true'] { border-color: var(--error); }
+.live-error { color: var(--error); font-size: 0.9rem; margin: 0; }
+.hint { color: var(--muted); font-size: 0.8rem; margin: 0; }
+.live-actions { display: flex; gap: 6px; }
+.live-actions button { flex: 1; }

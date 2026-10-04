@@ -19,7 +19,7 @@ export default function MoveList({ plies, ply, onSelect }) {
 
   const cell = (i) =>
     i < plies.length ? (
-      <button className={`san ${i === ply ? 'current' : ''}`} onClick={() => onSelect(i)}>
+      <button className={`san ${i === ply ? 'current' : ''}`} onClick={() => onSelect(i)} disabled={!onSelect}>
         {plies[i].move.san}
       </button>
     ) : (
