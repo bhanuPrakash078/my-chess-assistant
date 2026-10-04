@@ -97,10 +97,15 @@ button.primary { background: var(--accent); color: #1e1d1b; border-color: var(--
 }
 .piece {
   z-index: 2;
-  transition: transform 250ms ease-in-out; /* duration is set per move from distance */
+  /* duration is set per move from distance; linear so every square takes the same time */
+  transition: transform 250ms linear;
   animation: appear 150ms ease-out;
 }
 @keyframes appear { from { opacity: 0; } }
+
+/* under the attacker; delay and duration are set per capture */
+.piece.captured { z-index: 1; animation: captured linear forwards; }
+@keyframes captured { to { opacity: 0; } }
 
 .overlay.last-move { background: rgba(155, 199, 0, 0.41); }
 .overlay.check { background: radial-gradient(ellipse at center, rgb(255, 0, 0) 0%, rgb(231, 0, 0) 25%, rgba(169, 0, 0, 0) 89%); }

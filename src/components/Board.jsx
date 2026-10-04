@@ -15,11 +15,18 @@ function placeAt(square, flipped) {
 }
 
 export default function Board({ pieces, lastMove, checkSquare, flipped, msPerSquare }) {
-  // Remember where each piece was in the previous position, so its slide time is based
-  // on how far it actually travels (also when jumping several moves via the move list).
-  const [shown, setShown] = useState({ pieces, fromSquares: {} })
+  // Remember the previous position: where each piece was, so its slide time is based on
+  // how far it actually travels (also when jumping several moves via the move list), and
+  // which pieces were just captured, so they can stay on the board until the attacker
+  // reaches them.
+  const [shown, setShown] = useState({ pieces, fromSquares: {}, captured: [] })
   if (shown.pieces !== pieces) {
-    setShown({ pieces, fromSquares: Object.fromEntries(shown.pieces.map((p) => [p.id, p.square])) })
+    const remaining = new Set(pieces.map((p) => p.id))
+    setShown({
+      pieces,
+      fromSquares: Object.fromEntries(shown.pieces.map((p) => [p.id, p.square])),
+      captured: shown.pieces.filter((p) => !remaining.has(p.id)),
+    })
   }
 
   const slideStyle = (p) => {
@@ -28,6 +35,25 @@ export default function Board({ pieces, lastMove, checkSquare, flipped, msPerSqu
     if (from && from !== p.square) style.transitionDuration = `${squareDistance(from, p.square) * msPerSquare}ms`
     return style
   }
+
+  // A captured piece stays visible while the attacker covers every square but the last,
+  // then fades out as the attacker moves onto it.
+  const captureStyle = (victim) => {
+    const attacker = pieces.find((p) => p.square === victim.square && shown.fromSquares[p.id] !== p.square)
+    const from = attacker && shown.fromSquares[attacker.id]
+    const squares = from ? squareDistance(from, victim.square) : 1 // en passant: pawn moves one square
+    return {
+      ...placeAt(victim.square, flipped),
+      animationDelay: `${(squares - 1) * msPerSquare}ms`,
+      animationDuration: `${msPerSquare}ms`,
+    }
+  }
+
+  // Captured pieces are kept in the same id order as the rest, so no <img> ever changes
+  // place in the DOM (that would cancel its slide).
+  const drawn = [...pieces, ...shown.captured.map((p) => ({ ...p, captured: true }))].sort((a, b) =>
+    a.id < b.id ? -1 : 1,
+  )
 
   const files = flipped ? [...FILES].reverse() : [...FILES]
   const ranks = flipped ? [1, 2, 3, 4, 5, 6, 7, 8] : [8, 7, 6, 5, 4, 3, 2, 1]
@@ -52,14 +78,14 @@ export default function Board({ pieces, lastMove, checkSquare, flipped, msPerSqu
         </span>
       ))}
 
-      {pieces.map((p) => (
+      {drawn.map((p) => (
         <img
           key={p.id}
-          className="piece"
+          className={p.captured ? 'piece captured' : 'piece'}
           src={`/assets/pieces/cburnett/${p.color}${p.type.toUpperCase()}.svg`}
-          alt={`${p.color}${p.type} on ${p.square}`}
+          alt={`${p.color}${p.type} on ${p.square}${p.captured ? ' (captured)' : ''}`}
           draggable={false}
-          style={slideStyle(p)}
+          style={p.captured ? captureStyle(p) : slideStyle(p)}
         />
       ))}
     </div>
